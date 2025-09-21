@@ -49,6 +49,16 @@
       "location": "Mendoza",
       "person": "Joint",
       "description": ""
+    },
+    {
+      "id": 1758477425273,
+      "type": "activity",
+      "title": "Cocktails!",
+      "date": "2025-11-25",
+      "endDate": "2025-11-25",
+      "location": "BA",
+      "person": "Joint",
+      "description": "Lovely drinks "
     }
   ],
   "activityOptions": [
@@ -60,7 +70,7 @@
       "location": "Recoleta, Buenos Aires",
       "price": "Free",
       "url": "",
-      "description": "Visit the famous cemetery where Eva Perón is buried",
+      "description": "Visit the famous cemetery where Eva PerÃ³n is buried",
       "votes": {
         "Me": null,
         "Rob": null
@@ -81,5 +91,5 @@
       }
     }
   ],
-  "lastUpdated": "2025-09-21T17:55:01.357Z"
+  "lastUpdated": "2025-09-21T17:57:29.166Z"
 }
