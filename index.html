@@ -980,4 +980,481 @@
                 if (currentDisplayMonth > 11) {
                     currentDisplayMonth = 0;
                     currentDisplayYear++;
-                } else if
+                } else if (currentDisplayMonth < 0) {
+                    currentDisplayMonth = 11;
+                    currentDisplayYear--;
+                }
+
+                renderCalendar();
+            }
+
+            // Toggle view between calendar and timeline
+            function toggleView(view) {
+                currentView = view;
+
+                document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+
+                if (view === 'calendar') {
+                    document.getElementById('calendarView').style.display = 'block';
+                    document.getElementById('timelineView').classList.remove('active');
+                    document.querySelector('.toggle-btn[onclick*="calendar"]').classList.add('active');
+                } else if (view === 'timeline') {
+                    document.getElementById('calendarView').style.display = 'none';
+                    document.getElementById('timelineView').classList.add('active');
+                    document.querySelector('.toggle-btn[onclick*="timeline"]').classList.add('active');
+                }
+            }
+
+            // Add event function
+            function addEvent() {
+                const type = document.getElementById('eventType').value;
+                const title = document.getElementById('eventTitle').value;
+                const date = document.getElementById('eventDate').value;
+                const endDate = document.getElementById('eventEndDate').value;
+                const location = document.getElementById('eventLocation').value;
+                const person = document.getElementById('eventPerson').value;
+                const description = document.getElementById('eventDescription').value;
+
+                if (!title || !date) {
+                    alert('Please fill in the title and date');
+                    return;
+                }
+
+                const event = {
+                    id: Date.now(),
+                    type,
+                    title,
+                    date,
+                    endDate: endDate || date,
+                    location,
+                    person,
+                    description
+                };
+
+                events.push(event);
+                saveData();
+                renderCalendar();
+                renderTimeline();
+                updateStats();
+
+                // Clear form
+                document.getElementById('eventTitle').value = '';
+                document.getElementById('eventDate').value = '';
+                document.getElementById('eventEndDate').value = '';
+                document.getElementById('eventLocation').value = '';
+                document.getElementById('eventPerson').value = '';
+                document.getElementById('eventDescription').value = '';
+
+                // Switch to calendar view to see the new event
+                switchTab('calendar');
+            }
+
+            // Add activity option function
+            function addActivityOption() {
+                const name = document.getElementById('activityName').value;
+                const category = document.getElementById('activityCategory').value;
+                const duration = document.getElementById('activityDuration').value;
+                const location = document.getElementById('activityLocation').value;
+                const price = document.getElementById('activityPrice').value;
+                const url = document.getElementById('activityURL').value;
+                const description = document.getElementById('activityDesc').value;
+
+                if (!name || !location) {
+                    alert('Please fill in the activity name and location');
+                    return;
+                }
+
+                const activity = {
+                    id: Date.now(),
+                    name,
+                    category,
+                    duration,
+                    location,
+                    price,
+                    url,
+                    description,
+                    votes: {}
+                };
+
+                // Initialize votes for all voters
+                voters.forEach(voter => {
+                    activity.votes[voter] = null;
+                });
+
+                activityOptions.push(activity);
+                saveData();
+                renderActivities();
+                updateStats();
+
+                // Clear form
+                document.getElementById('activityName').value = '';
+                document.getElementById('activityDuration').value = '';
+                document.getElementById('activityLocation').value = '';
+                document.getElementById('activityPrice').value = '';
+                document.getElementById('activityURL').value = '';
+                document.getElementById('activityDesc').value = '';
+            }
+
+            // Filter activities function
+            function filterActivities() {
+                renderActivities();
+            }
+
+            // Render calendar function
+            function renderCalendar() {
+                const calendar = document.getElementById('calendar');
+                calendar.innerHTML = '';
+
+                // Determine which month to display
+                let displayMonth, displayYear;
+
+                if (currentDisplayMonth !== null && currentDisplayYear !== null) {
+                    displayMonth = currentDisplayMonth;
+                    displayYear = currentDisplayYear;
+                } else if (events.length > 0) {
+                    // Default to the first event's month
+                    const firstEvent = [...events].sort((a, b) => a.date.localeCompare(b.date))[0];
+                    const [year, month] = firstEvent.date.split('-');
+                    displayYear = parseInt(year);
+                    displayMonth = parseInt(month) - 1;
+                    currentDisplayYear = displayYear;
+                    currentDisplayMonth = displayMonth;
+                } else {
+                    // Default to current month
+                    const today = new Date();
+                    displayYear = today.getFullYear();
+                    displayMonth = today.getMonth();
+                    currentDisplayYear = displayYear;
+                    currentDisplayMonth = displayMonth;
+                }
+
+                // Add month navigation
+                const monthHeader = document.createElement('div');
+                monthHeader.style.gridColumn = '1 / -1';
+                monthHeader.style.display = 'flex';
+                monthHeader.style.justifyContent = 'space-between';
+                monthHeader.style.alignItems = 'center';
+                monthHeader.style.marginBottom = '20px';
+                monthHeader.innerHTML = `
+                    <button class="btn btn-secondary" onclick="TripPlanner.changeMonth(-1)">‹ Previous</button>
+                    <h3>${new Date(displayYear, displayMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
+                    <button class="btn btn-secondary" onclick="TripPlanner.changeMonth(1)">Next ›</button>
+                `;
+                calendar.appendChild(monthHeader);
+
+                // Add day headers
+                const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                dayHeaders.forEach(day => {
+                    const header = document.createElement('div');
+                    header.className = 'calendar-header';
+                    header.textContent = day;
+                    calendar.appendChild(header);
+                });
+
+                // Get first day of month and number of days
+                const firstDay = new Date(displayYear, displayMonth, 1);
+                const lastDay = new Date(displayYear, displayMonth + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startingDayOfWeek = (firstDay.getDay() + 6) % 7; // Convert to Mon=0 format
+
+                // Add empty cells for days before the month starts
+                for (let i = 0; i < startingDayOfWeek; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'calendar-cell empty';
+                    calendar.appendChild(emptyCell);
+                }
+
+                // Add calendar cells for each day of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'calendar-cell';
+
+                    const dateStr = `${displayYear}-${String(displayMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const today = new Date().toISOString().split('T')[0];
+
+                    if (dateStr === today) {
+                        cell.classList.add('today');
+                    }
+
+                    // Add date number
+                    const dateNumber = document.createElement('div');
+                    dateNumber.className = 'date-number';
+                    dateNumber.textContent = day;
+                    cell.appendChild(dateNumber);
+
+                    // Add events for this day
+                    const dayEvents = events.filter(event => {
+                        if (event.endDate && event.endDate !== event.date) {
+                            // Multi-day event
+                            return dateStr >= event.date && dateStr <= event.endDate;
+                        } else {
+                            // Single day event
+                            return event.date === dateStr;
+                        }
+                    });
+
+                    dayEvents.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.className = `event ${event.type}`;
+                        if (event.person) {
+                            eventDiv.classList.add(`person-${event.person.toLowerCase()}`);
+                        }
+
+                        eventDiv.innerHTML = `
+                            <div class="event-type">${event.type}</div>
+                            <div class="event-title">${event.title}</div>
+                            <div class="event-location">${event.location}</div>
+                            <button class="delete-btn" onclick="TripPlanner.deleteEvent(${event.id})">×</button>
+                        `;
+                        cell.appendChild(eventDiv);
+                    });
+
+                    calendar.appendChild(cell);
+                }
+            }
+
+            // Render timeline function
+            function renderTimeline() {
+                const timeline = document.getElementById('timeline');
+                timeline.innerHTML = '';
+
+                const sortedEvents = [...events].sort((a, b) => a.date.localeCompare(b.date));
+
+                sortedEvents.forEach(event => {
+                    const item = document.createElement('div');
+                    item.className = 'timeline-item';
+
+                    const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+
+                    item.innerHTML = `
+                        <div class="timeline-date">${eventDate}</div>
+                        <div class="timeline-content">
+                            <span class="timeline-event-type ${event.type}">${event.type}</span>
+                            <strong>${event.title}</strong>
+                            <div style="color: #6c757d; margin-top: 5px;">${event.location}</div>
+                            ${event.description ? `<div style="margin-top: 10px;">${event.description}</div>` : ''}
+                        </div>
+                        <button class="btn btn-secondary" onclick="TripPlanner.deleteEvent(${event.id})" style="margin-left: auto;">Delete</button>
+                    `;
+                    timeline.appendChild(item);
+                });
+            }
+
+            // Render activities function
+            function renderActivities() {
+                const grid = document.getElementById('activityGrid');
+                grid.innerHTML = '';
+
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                const voteFilter = document.getElementById('voteFilter').value;
+
+                let filteredActivities = activityOptions;
+
+                // Apply category filter
+                if (categoryFilter !== 'all') {
+                    filteredActivities = filteredActivities.filter(activity => activity.category === categoryFilter);
+                }
+
+                // Apply vote filter
+                if (voteFilter !== 'all') {
+                    filteredActivities = filteredActivities.filter(activity => {
+                        const votes = Object.values(activity.votes);
+                        const yesVotes = votes.filter(vote => vote === 'yes').length;
+                        const totalVotes = votes.filter(vote => vote !== null).length;
+
+                        if (voteFilter === 'unanimous') {
+                            return totalVotes > 0 && yesVotes === totalVotes;
+                        } else if (voteFilter === 'agreed') {
+                            return totalVotes > 0 && yesVotes >= totalVotes / 2;
+                        } else if (voteFilter === 'undecided') {
+                            return totalVotes === 0;
+                        }
+                        return true;
+                    });
+                }
+
+                filteredActivities.forEach(activity => {
+                    const card = document.createElement('div');
+                    card.className = 'activity-card';
+
+                    const votes = Object.values(activity.votes);
+                    const yesCount = votes.filter(vote => vote === 'yes').length;
+                    const maybeCount = votes.filter(vote => vote === 'maybe').length;
+                    const noCount = votes.filter(vote => vote === 'no').length;
+
+                    card.innerHTML = `
+                        <div class="activity-category category-${activity.category}">${activity.category}</div>
+                        <h3 class="activity-title">${activity.name}</h3>
+                        <div class="activity-details">
+                            <div class="activity-detail">📍 ${activity.location}</div>
+                            <div class="activity-detail">⏱️ ${activity.duration}</div>
+                            <div class="activity-detail">💰 ${activity.price}</div>
+                        </div>
+                        <div class="activity-description">${activity.description}</div>
+                        ${activity.url ? `<a href="${activity.url}" target="_blank" class="activity-link">More Info →</a>` : ''}
+
+                        <div class="voting-section">
+                            <div class="voting-header">Vote on this activity:</div>
+                            ${voters.map(voter => `
+                                <div class="voter-row">
+                                    <span class="voter-name">${voter}:</span>
+                                    <div class="vote-buttons">
+                                        <button class="vote-btn yes ${activity.votes[voter] === 'yes' ? 'active' : ''}"
+                                                onclick="TripPlanner.vote(${activity.id}, '${voter}', 'yes')">Yes</button>
+                                        <button class="vote-btn maybe ${activity.votes[voter] === 'maybe' ? 'active' : ''}"
+                                                onclick="TripPlanner.vote(${activity.id}, '${voter}', 'maybe')">Maybe</button>
+                                        <button class="vote-btn no ${activity.votes[voter] === 'no' ? 'active' : ''}"
+                                                onclick="TripPlanner.vote(${activity.id}, '${voter}', 'no')">No</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+
+                            <div class="vote-summary">
+                                <div class="vote-count">
+                                    <div class="vote-number" style="color: #28a745;">${yesCount}</div>
+                                    <div class="vote-label">Yes</div>
+                                </div>
+                                <div class="vote-count">
+                                    <div class="vote-number" style="color: #ffc107;">${maybeCount}</div>
+                                    <div class="vote-label">Maybe</div>
+                                </div>
+                                <div class="vote-count">
+                                    <div class="vote-number" style="color: #dc3545;">${noCount}</div>
+                                    <div class="vote-label">No</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="add-to-calendar-btn" onclick="TripPlanner.addActivityToCalendar(${activity.id})">Add to Calendar</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            // Vote function
+            function vote(activityId, voter, voteValue) {
+                const activity = activityOptions.find(a => a.id === activityId);
+                if (activity) {
+                    activity.votes[voter] = voteValue;
+                    saveData();
+                    renderActivities();
+                }
+            }
+
+            // Add activity to calendar
+            function addActivityToCalendar(activityId) {
+                const activity = activityOptions.find(a => a.id === activityId);
+                if (activity) {
+                    const date = prompt('Enter date for this activity (YYYY-MM-DD):');
+                    if (date) {
+                        const event = {
+                            id: Date.now(),
+                            type: 'activity',
+                            title: activity.name,
+                            date: date,
+                            endDate: date,
+                            location: activity.location,
+                            person: '',
+                            description: activity.description
+                        };
+                        events.push(event);
+                        saveData();
+                        renderCalendar();
+                        renderTimeline();
+                        updateStats();
+                        alert('Activity added to calendar!');
+                    }
+                }
+            }
+
+            // Delete event function
+            function deleteEvent(eventId) {
+                if (confirm('Are you sure you want to delete this event?')) {
+                    events = events.filter(event => event.id !== eventId);
+                    saveData();
+                    renderCalendar();
+                    renderTimeline();
+                    updateStats();
+                }
+            }
+
+            // Update stats function
+            function updateStats() {
+                document.getElementById('totalEvents').textContent = events.length;
+                document.getElementById('totalActivities').textContent = activityOptions.length;
+
+                const locations = [...new Set(events.map(event => event.location).filter(Boolean))];
+                document.getElementById('totalLocations').textContent = locations.length;
+
+                if (events.length > 0) {
+                    const sortedEvents = [...events].sort((a, b) => a.date.localeCompare(b.date));
+                    const firstDate = new Date(sortedEvents[0].date);
+                    const lastDate = new Date(sortedEvents[sortedEvents.length - 1].endDate || sortedEvents[sortedEvents.length - 1].date);
+                    const duration = Math.ceil((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+                    document.getElementById('tripDuration').textContent = `${duration} days`;
+                } else {
+                    document.getElementById('tripDuration').textContent = '0 days';
+                }
+            }
+
+            // Get example activities
+            function getExampleActivities() {
+                return [
+                    {
+                        id: 1,
+                        name: "Tango Show at Café Tortoni",
+                        category: "cultural",
+                        duration: "2-3 hours",
+                        location: "San Telmo, Buenos Aires",
+                        price: "$60",
+                        url: "https://www.cafetortoni.com.ar",
+                        description: "Experience authentic Argentine tango in one of Buenos Aires' most historic cafés",
+                        votes: { "Me": null, "Rob": null }
+                    },
+                    {
+                        id: 2,
+                        name: "Iguazu Falls Tour",
+                        category: "nature",
+                        duration: "Full day",
+                        location: "Iguazu National Park",
+                        price: "$120",
+                        url: "",
+                        description: "Visit one of the world's most spectacular waterfalls on the border of Argentina and Brazil",
+                        votes: { "Me": null, "Rob": null }
+                    }
+                ];
+            }
+
+            // Initialize the application
+            function init() {
+                loadData();
+                const testResults = runTests();
+                displayTestResults(testResults);
+            }
+
+            // Public API - expose methods that need to be called from HTML
+            return {
+                switchTab: switchTab,
+                toggleView: toggleView,
+                addEvent: addEvent,
+                addActivityOption: addActivityOption,
+                filterActivities: filterActivities,
+                changeMonth: changeMonth,
+                vote: vote,
+                addActivityToCalendar: addActivityToCalendar,
+                deleteEvent: deleteEvent,
+                init: init
+            };
+        })();
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            TripPlanner.init();
+        });
+    </script>
+</body>
+</html>
