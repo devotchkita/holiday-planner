@@ -169,7 +169,7 @@
 
         .calendar {
             display: grid;
-            grid-template-columns: 100px repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(7, 1fr);
             gap: 10px;
             min-width: 100%;
         }
@@ -817,9 +817,9 @@
         // Change month function
         function changeMonth(direction) {
             if (currentDisplayMonth === null || currentDisplayYear === null) {
-                const today = new Date();
-                currentDisplayMonth = today.getMonth();
-                currentDisplayYear = today.getFullYear();
+                // Default to November 2025
+                currentDisplayMonth = 10; // November
+                currentDisplayYear = 2025;
             }
             
             currentDisplayMonth += direction;
@@ -851,16 +851,19 @@
                 return;
             }
 
+            // Ensure date is in YYYY-MM-DD format
             const event = {
                 id: Date.now(),
                 type,
                 title,
-                date,
+                date: date, // This will be in YYYY-MM-DD format from the input
                 endDate: endDate || date,
                 location,
                 person,
                 description
             };
+
+            console.log('Adding event with date:', event.date); // Debug log
 
             events.push(event);
             saveData();
@@ -1113,10 +1116,14 @@
                 displayYear = today.getFullYear();
                 displayMonth = today.getMonth();
             } else {
-                // Show the month of the first event
-                const firstEventDate = new Date(events.sort((a, b) => new Date(a.date) - new Date(b.date))[0].date);
-                displayYear = firstEventDate.getFullYear();
-                displayMonth = firstEventDate.getMonth();
+                // Show the month of the first event, but make sure we parse it correctly
+                const sortedEvents = events.sort((a, b) => {
+                    return a.date.localeCompare(b.date);
+                });
+                // Parse the date string directly to avoid timezone issues
+                const [year, month, day] = sortedEvents[0].date.split('-');
+                displayYear = parseInt(year);
+                displayMonth = parseInt(month) - 1; // JavaScript months are 0-indexed
             }
 
             // Create date array for the full month
@@ -1302,8 +1309,8 @@
                     id: 1,
                     type: 'travel',
                     title: 'Landing in Buenos Aires',
-                    date: '2024-11-13',
-                    endDate: '2024-11-13',
+                    date: '2025-11-13',
+                    endDate: '2025-11-13',
                     location: 'Buenos Aires, Argentina',
                     person: 'Me',
                     description: 'Arrival at Ezeiza International Airport'
@@ -1312,8 +1319,8 @@
                     id: 2,
                     type: 'travel',
                     title: 'Rob arrives',
-                    date: '2024-11-16',
-                    endDate: '2024-11-16',
+                    date: '2025-11-16',
+                    endDate: '2025-11-16',
                     location: 'Buenos Aires, Argentina',
                     person: 'Rob',
                     description: 'Rob lands 3 days after me'
@@ -1322,18 +1329,18 @@
                     id: 3,
                     type: 'accommodation',
                     title: 'Hotel in Palermo',
-                    date: '2024-11-13',
-                    endDate: '2024-11-20',
+                    date: '2025-11-13',
+                    endDate: '2025-11-20',
                     location: 'Buenos Aires, Argentina',
-                    person: 'General',
+                    person: '',
                     description: 'Staying in Palermo neighborhood'
                 },
                 {
                     id: 4,
                     type: 'travel',
                     title: 'Rob departs',
-                    date: '2024-11-27',
-                    endDate: '2024-11-27',
+                    date: '2025-11-27',
+                    endDate: '2025-11-27',
                     location: 'Buenos Aires, Argentina',
                     person: 'Rob',
                     description: 'Rob leaves 3 days before me'
@@ -1342,8 +1349,8 @@
                     id: 5,
                     type: 'travel',
                     title: 'Departure from Buenos Aires',
-                    date: '2024-11-30',
-                    endDate: '2024-11-30',
+                    date: '2025-11-30',
+                    endDate: '2025-11-30',
                     location: 'Buenos Aires, Argentina',
                     person: 'Me',
                     description: 'Flight back home'
