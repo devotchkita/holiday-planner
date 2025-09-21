@@ -41,24 +41,54 @@
       "description": ""
     },
     {
-      "id": 1758476843672,
+      "id": 1758477901696,
       "type": "travel",
       "title": "Mendoza",
       "date": "2025-11-20",
       "endDate": "2025-11-23",
-      "location": "Mendoza",
+      "location": "",
       "person": "Joint",
       "description": ""
     },
     {
-      "id": 1758477425273,
+      "id": 1758477988159,
+      "type": "travel",
+      "title": "Caro flight back to UK",
+      "date": "2025-11-29",
+      "endDate": "2025-11-29",
+      "location": "Buenos Aires",
+      "person": "Caro",
+      "description": ""
+    },
+    {
+      "id": 1758478008301,
+      "type": "travel",
+      "title": "Rob fly back to UK",
+      "date": "2025-11-27",
+      "endDate": "2025-11-27",
+      "location": "Buenos Aires",
+      "person": "Rob",
+      "description": ""
+    },
+    {
+      "id": 1758478061093,
       "type": "activity",
-      "title": "Cocktails!",
-      "date": "2025-11-25",
-      "endDate": "2025-11-25",
-      "location": "BA",
+      "title": "Aconcagua Base Camp",
+      "date": "2025-11-21",
+      "endDate": "2025-11-21",
+      "location": "Uspallata",
       "person": "Joint",
-      "description": "Lovely drinks "
+      "description": "Hiking to Base camp"
+    },
+    {
+      "id": 1758478106928,
+      "type": "travel",
+      "title": "MDQ",
+      "date": "2025-11-24",
+      "endDate": "2025-11-25",
+      "location": "Mar del plata",
+      "person": "Joint",
+      "description": ""
     }
   ],
   "activityOptions": [
@@ -91,5 +121,5 @@
       }
     }
   ],
-  "lastUpdated": "2025-09-21T17:58:19.424Z"
+  "lastUpdated": "2025-09-21T18:12:37.554Z"
 }
