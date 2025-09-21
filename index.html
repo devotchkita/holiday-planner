@@ -810,6 +810,32 @@
             }
         }
 
+        // Add global variable for current display month
+        let currentDisplayMonth = null;
+        let currentDisplayYear = null;
+
+        // Change month function
+        function changeMonth(direction) {
+            if (currentDisplayMonth === null || currentDisplayYear === null) {
+                const today = new Date();
+                currentDisplayMonth = today.getMonth();
+                currentDisplayYear = today.getFullYear();
+            }
+            
+            currentDisplayMonth += direction;
+            
+            // Handle year change
+            if (currentDisplayMonth > 11) {
+                currentDisplayMonth = 0;
+                currentDisplayYear++;
+            } else if (currentDisplayMonth < 0) {
+                currentDisplayMonth = 11;
+                currentDisplayYear--;
+            }
+            
+            renderCalendar();
+        }
+
         // Add new event
         function addEvent() {
             const type = document.getElementById('eventType').value;
@@ -1078,20 +1104,46 @@
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
 
+            // Determine the month to display
+            let displayYear, displayMonth;
+            
             if (events.length === 0) {
-                calendar.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6c757d;">No events added yet. Add your first event in the "Add Event" tab!</div>';
-                return;
+                // If no events, show current month
+                const today = new Date();
+                displayYear = today.getFullYear();
+                displayMonth = today.getMonth();
+            } else {
+                // Show the month of the first event
+                const firstEventDate = new Date(events.sort((a, b) => new Date(a.date) - new Date(b.date))[0].date);
+                displayYear = firstEventDate.getFullYear();
+                displayMonth = firstEventDate.getMonth();
             }
 
-            // Get date range
-            const dates = events.flatMap(e => [new Date(e.date), new Date(e.endDate)]);
-            const minDate = new Date(Math.min(...dates));
-            const maxDate = new Date(Math.max(...dates));
-
-            // Create date array
+            // Create date array for the full month
+            const firstDayOfMonth = new Date(displayYear, displayMonth, 1);
+            const lastDayOfMonth = new Date(displayYear, displayMonth + 1, 0);
+            
             const dateArray = [];
-            for (let d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) {
+            for (let d = new Date(firstDayOfMonth); d <= lastDayOfMonth; d.setDate(d.getDate() + 1)) {
                 dateArray.push(new Date(d));
+            }
+
+            // Add month/year display and navigation
+            const monthNavigation = document.createElement('div');
+            monthNavigation.style = 'grid-column: 1/-1; display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;';
+            monthNavigation.innerHTML = `
+                <button onclick="changeMonth(-1)" style="padding: 8px 16px; background: #595959; color: white; border: none; border-radius: 6px; cursor: pointer;">← Previous</button>
+                <h2 style="margin: 0; color: #495057;">${firstDayOfMonth.toLocaleDateString('en', { month: 'long', year: 'numeric' })}</h2>
+                <button onclick="changeMonth(1)" style="padding: 8px 16px; background: #595959; color: white; border: none; border-radius: 6px; cursor: pointer;">Next →</button>
+            `;
+            calendar.appendChild(monthNavigation);
+
+            if (events.length === 0) {
+                const noEventsMessage = document.createElement('div');
+                noEventsMessage.style = 'grid-column: 1/-1; text-align: center; padding: 40px; color: #6c757d;';
+                noEventsMessage.textContent = 'No events added yet. Add your first event in the "Add Event" tab!';
+                calendar.appendChild(noEventsMessage);
+                return;
             }
 
             // Create header row
