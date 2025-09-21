@@ -1,0 +1,85 @@
+{
+  "events": [
+    {
+      "id": 1758476346670,
+      "type": "travel",
+      "title": "Caro landing in BA",
+      "date": "2025-11-14",
+      "endDate": "2025-11-14",
+      "location": "Buenos Aires",
+      "person": "Caro",
+      "description": "8.50am"
+    },
+    {
+      "id": 1758476369296,
+      "type": "travel",
+      "title": "Rob landing in BA",
+      "date": "2025-11-17",
+      "endDate": "2025-11-17",
+      "location": "Buenos Aires",
+      "person": "Rob",
+      "description": "11.45am "
+    },
+    {
+      "id": 1758476415065,
+      "type": "activity",
+      "title": "Oasis!",
+      "date": "2025-11-16",
+      "endDate": "2025-11-16",
+      "location": "Buenos Aires",
+      "person": "Caro",
+      "description": "River plate & Bianca"
+    },
+    {
+      "id": 1758476678988,
+      "type": "activity",
+      "title": "Visiting Poyo",
+      "date": "2025-11-19",
+      "endDate": "2025-11-19",
+      "location": "Buenos Aires",
+      "person": "Joint",
+      "description": ""
+    },
+    {
+      "id": 1758476843672,
+      "type": "travel",
+      "title": "Mendoza",
+      "date": "2025-11-20",
+      "endDate": "2025-11-23",
+      "location": "Mendoza",
+      "person": "Joint",
+      "description": ""
+    }
+  ],
+  "activityOptions": [
+    {
+      "id": 102,
+      "name": "Recoleta Cemetery Tour",
+      "category": "cultural",
+      "duration": "1-2 hours",
+      "location": "Recoleta, Buenos Aires",
+      "price": "Free",
+      "url": "",
+      "description": "Visit the famous cemetery where Eva Perón is buried",
+      "votes": {
+        "Me": null,
+        "Rob": null
+      }
+    },
+    {
+      "id": 103,
+      "name": "Parrilla Experience at Don Julio",
+      "category": "food",
+      "duration": "2-3 hours",
+      "location": "Palermo, Buenos Aires",
+      "price": "$80-100",
+      "url": "https://www.parrilladonjulio.com",
+      "description": "Award-winning steakhouse - reservation required",
+      "votes": {
+        "Me": "no",
+        "Rob": null
+      }
+    }
+  ],
+  "lastUpdated": "2025-09-21T17:55:01.357Z"
+}
