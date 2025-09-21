@@ -367,6 +367,19 @@
             background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
         }
 
+        /* Person-specific timeline event colors - higher priority */
+        .timeline-event-type.person-caro {
+            background: #526476 !important;
+        }
+
+        .timeline-event-type.person-rob {
+            background: #a83427 !important;
+        }
+
+        .timeline-event-type.person-joint {
+            background: #90b39d !important;
+        }
+
         /* Activity Options Styles */
         .activity-filters {
             display: flex;
@@ -1239,10 +1252,12 @@
                         day: 'numeric'
                     });
 
+                    const personClass = event.person ? `person-${event.person.toLowerCase()}` : '';
+
                     item.innerHTML = `
                         <div class="timeline-date">${eventDate}</div>
                         <div class="timeline-content">
-                            <span class="timeline-event-type ${event.type}">${event.type}</span>
+                            <span class="timeline-event-type ${event.type} ${personClass}">${event.type}</span>
                             <strong>${event.title}</strong>
                             <div style="color: #6c757d; margin-top: 5px;">${event.location}</div>
                             ${event.description ? `<div style="margin-top: 10px;">${event.description}</div>` : ''}
@@ -1422,7 +1437,7 @@
                         price: "$60",
                         url: "https://www.cafetortoni.com.ar",
                         description: "Experience authentic Argentine tango in one of Buenos Aires' most historic cafés",
-                        votes: { "Me": null, "Rob": null }
+                        votes: { "Caro": null, "Rob": null }
                     },
                     {
                         id: 2,
@@ -1433,7 +1448,7 @@
                         price: "$120",
                         url: "",
                         description: "Visit one of the world's most spectacular waterfalls on the border of Argentina and Brazil",
-                        votes: { "Me": null, "Rob": null }
+                        votes: { "Caro": null, "Rob": null }
                     }
                 ];
             }
