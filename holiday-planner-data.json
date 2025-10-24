@@ -41,16 +41,6 @@
       "description": ""
     },
     {
-      "id": 1758477901696,
-      "type": "travel",
-      "title": "Mendoza",
-      "date": "2025-11-20",
-      "endDate": "2025-11-22",
-      "location": "",
-      "person": "Joint",
-      "description": ""
-    },
-    {
       "id": 1758477988159,
       "type": "travel",
       "title": "Caro flight back to UK",
@@ -71,34 +61,14 @@
       "description": ""
     },
     {
-      "id": 1758478061093,
-      "type": "activity",
-      "title": "Aconcagua Base Camp",
-      "date": "2025-11-21",
-      "endDate": "2025-11-21",
-      "location": "Uspallata",
-      "person": "Joint",
-      "description": "Hiking to Base camp"
-    },
-    {
-      "id": 1758478106928,
+      "id": 1761324147701,
       "type": "travel",
       "title": "MDQ",
-      "date": "2025-11-24",
-      "endDate": "2025-11-25",
-      "location": "Mar del plata",
+      "date": "2025-11-21",
+      "endDate": "2025-11-24",
+      "location": "MDQ",
       "person": "Joint",
-      "description": ""
-    },
-    {
-      "id": 1758478563037,
-      "type": "activity",
-      "title": "Asado en Escobar",
-      "date": "2025-11-23",
-      "endDate": "2025-11-23",
-      "location": "Escobar",
-      "person": "Joint",
-      "description": "Fam"
+      "description": "Con Maru, Bruno, Bianca & German"
     }
   ],
   "activityOptions": [
@@ -131,5 +101,5 @@
       }
     }
   ],
-  "lastUpdated": "2025-09-21T18:16:16.549Z"
+  "lastUpdated": "2025-10-24T16:48:53.406Z"
 }
